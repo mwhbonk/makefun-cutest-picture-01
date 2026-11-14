@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>Sign Pesan Delegasi make.fun</title>
+    <style>
+      button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) { min-height: 2.75rem; }
+
+      :root{
+        --bg:#f4f4f2;
+        --surface:#ffffff;
+        --surface-2:#ececea;
+        --text:#17181a;
+        --muted:#5b5e63;
+        --line:#d9d9d4;
+        --accent:#0b6b4f;
+        --accent-hover:#095c43;
+        --accent-text:#ffffff;
+        --ok-bg:#e6f4ec;
+        --ok-text:#14532d;
+        --ok-line:#9fd3ae;
+        --err-bg:#fdecec;
+        --err-text:#7f1d1d;
+        --err-line:#f0b4b4;
+        --warn-bg:#fff7e0;
+        --warn-text:#713f12;
+        --warn-line:#ecd28a;
+        --code-bg:#111418;
+        --code-text:#e8f5ee;
+        --sig-bg:#0b2e23;
+        --sig-text:#d1fae5;
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --bg:#101112;
+          --surface:#1a1b1d;
+          --surface-2:#242527;
+          --text:#f2f2f0;
+          --muted:#a7a9ad;
+          --line:#333538;
+          --accent:#2f9e77;
+          --accent-hover:#37b889;
+          --accent-text:#06231a;
+          --ok-bg:#123524;
+          --ok-text:#bbf7d0;
+          --ok-line:#2f6b4a;
+          --err-bg:#3d1717;
+          --err-text:#fecaca;
+          --err-line:#7f2d2d;
+          --warn-bg:#3a2f10;
+          --warn-text:#fde68a;
+          --warn-line:#715f22;
+          --code-bg:#0a0c0e;
+          --code-text:#d9f2e4;
+          --sig-bg:#0a2e22;
+          --sig-text:#d1fae5;
+        }
+      }
+
+      *{ box-sizing:border-box; }
+      html{ -webkit-text-size-adjust:100%; }
+      body{
+        margin:0;
+        background:var(--bg);
+        color:var(--text);
+        font-family: ui-sans-system, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height:1.55;
+      }
+      .wrap{
+        max-width:760px;
+        margin:0 auto;
+        padding:28px 18px 56px;
+      }
+      h1{
+        font-size:1.75rem;
+        line-height:1.2;
+        margin:0 0 8px;
+        letter-spacing:-0.02em;
+      }
+      .lead{
+        margin:0 0 6px;
+        color:var(--muted);
+        font-size:1rem;
+      }
+      .lead strong{ color:var(--text); }
+      .meta-line{
+        font-size:.9rem;
+        color:var(--muted);
+        margin:0 0 24px;
+      }
+      .card{
+        background:var(--surface);
+        border:1px solid var(--line);
+        border-radius:14px;
+        padding:20px;
+        margin-bottom:16px;
+      }
+      .step-head{
+        display:flex;
+        align-items:flex-start;
+        gap:12px;
+        margin-bottom:14px;
+      }
+      .step-num{
+        flex:0 0 auto;
+        width:30px; height:30px;
+        border-radius:999px;
+        background:var(--text);
+        color:var(--bg);
+        display:flex; align-items:center; justify-content:center;
+        font-weight:700; font-size:.9rem;
+        margin-top:2px;
+      }
+      .step-head h2{
+        margin:0; font-size:1.08rem; line-height:1.3;
+      }
+      .step-head p{
+        margin:2px 0 0; color:var(--muted); font-size:.92rem;
+      }
+      .mono{
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        overflow-wrap:anywhere;
+        word-break:break-word;
+      }
+      .addr-box{
+        background:var(--surface-2);
+        border:1px solid var(--line);
+        border-radius:10px;
+        padding:12px 14px;
+        font-size:.92rem;
+      }
+      .addr-box .label{
+        display:block;
+        font-family:inherit;
+        font-size:.78rem;
+        font-weight:700;
+        letter-spacing:.04em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin-bottom:4px;
+      }
+      .btn{
+        appearance:none;
+        border:1px solid transparent;
+        border-radius:10px;
+        padding:10px 18px;
+        font-size:1rem;
+        font-weight:650;
+        cursor:pointer;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        gap:8px;
+        min-height:48px;
+        transition:background .15s ease, opacity .15s ease;
+      }
+      .btn-primary{ background:var(--accent); color:var(--accent-text); width:100%; }
+      .btn-primary:hover:not(:disabled){ background:var(--accent-hover); }
+      .btn-secondary{
+        background:transparent; color:var(--text);
+        border-color:var(--line);
+      }
+      .btn-secondary:hover:not(:disabled){ background:var(--surface-2); }
+      .btn:disabled{ opacity:.45; cursor:not-allowed; }
+      .btn-row{ display:flex; flex-wrap:wrap; gap:10px; }
+      .btn-row .btn{ flex:1 1 180px; }
+
+      .wallet-grid{
+        display:grid;
+        grid-template-columns:repeat(3, 1fr);
+        gap:10px;
+        margin-bottom:14px;
+      }
+      @media (max-width:560px){
+        .wallet-grid{ grid-template-columns:1fr; }
+        .card{ padding:16px; }
+        h1{ font-size:1.5rem; }
+      }
+      .wallet-chip{
+        border:1px solid var(--line);
+        border-radius:10px;
+        padding:12px;
+        text-align:left;
+        background:var(--surface);
+        color:var(--text);
+        cursor:pointer;
+        min-height:64px;
+        display:flex; flex-direction:column; gap:2px; justify-content:center;
+      }
+      .wallet-chip strong{ font-size:1rem; }
+      .wallet-chip span{ font-size:.82rem; color:var(--muted); }
+      .wallet-chip.detected{ border-color:var(--accent); }
+      .wallet-chip.selected{ outline:2px solid var(--accent); outline-offset:1px; }
+      .wallet-chip:disabled{ opacity:.55; cursor:not-allowed; }
+
+      .alert{
+        border-radius:10px;
+        padding:12px 14px;
+        font-size:.94rem;
+        border:1px solid;
+        margin-top:14px;
+        display:none;
+      }
+      .alert.show{ display:block; }
+      .alert-ok{ background:var(--ok-bg); color:var(--ok-text); border-color:var(--ok-line); }
+      .alert-err{ background:var(--err-bg); color:var(--err-text); border-color:var(--err-line); }
+      .alert-warn{ background:var(--warn-bg); color:var(--warn-text); border-color:var(--warn-line); }
+
+      .message-box{
+        background:var(--code-bg);
+        color:var(--code-text);
+        border-radius:10px;
+        padding:16px;
+        font-size:.95rem;
+        line-height:1.65;
+        white-space:pre-wrap;
+        overflow-wrap:anywhere;
+        word-break:break-word;
+        user-select:all;
+      }
+      .detail-grid{
+        display:grid;
+        grid-template-columns:120px 1fr;
+        gap:6px 14px;
+        font-size:.92rem;
+        margin-top:14px;
+      }
+      @media (max-width:480px){
+        .detail-grid{ grid-template-columns:1fr; gap:2px; }
+        .detail-grid dd{ margin-bottom:8px; }
+      }
+      .detail-grid dt{ color:var(--muted); font-weight:600; }
+      .detail-grid dd{ margin:0; }
+
+      .sig-box{
+        background:var(--sig-bg);
+        color:var(--sig-text);
+        border-radius:12px;
+        padding:18px;
+        font-size:1.28rem;
+        line-height:1.55;
+        letter-spacing:.01em;
+        overflow-wrap:anywhere;
+        word-break:break-all;
+        user-select:all;
+        display:none;
+      }
+      .sig-box.show{ display:block; }
+      @media (max-width:560px){ .sig-box{ font-size:1.08rem; } }
+
+      .hidden{ display:none !important; }
+      .small{ font-size:.88rem; color:var(--muted); }
+      .mt{ margin-top:14px; }
+      .status-row{
+        display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+        font-size:.92rem;
+      }
+      .dot{ width:10px; height:10px; border-radius:999px; background:#b6b6b0; flex:0 0 auto; }
+      .dot.on{ background:#22a06b; }
+      .dot.bad{ background:#d64545; }
+      footer{
+        color:var(--muted);
+        font-size:.88rem;
+        margin-top:8px;
+      }
+      footer ul{ padding-left:18px; margin:8px 0 0; }
+      a{ color:var(--accent); }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>Tanda Tangan Pesan Delegasi make.fun</h1>
+      <p class="lead">Halaman ini buat tanda tangan <strong>satu pesan delegasi</strong> untuk akun <strong>@sage-sparrow-93</strong>. Tanda tangannya <strong>bukan transaksi</strong> — tidak ada transfer, tidak ada fee, dan tidak ada data yang dikirim ke server mana pun.</p>
+      <p class="meta-line">Delegasi berlaku sampai 12 Februari 2027. Agent yang diberi kuasa: <span class="mono">C5rgfwQXaiotuK4oWcesmnRqaeUAZiNwCZcvt2f4jMhD</span></p>
+
+      <!-- LANGKAH 1 -->
+      <section class="card" aria-labelledby="h-step1">
+        <div class="step-head">
+          <div class="step-num">1</div>
+          <div>
+            <h2 id="h-step1">Hubungkan wallet</h2>
+            <p>Pakai Phantom, Backpack, atau Solflare. Wallet harus yang alamatnya persis di bawah ini.</p>
+          </div>
+        </div>
+
+        <div class="addr-box">
+          <span class="label">Alamat wallet yang wajib dipakai</span>
+          <span class="mono" id="expectedAddress">9fu5GdLCoJPL2SuX8ZY8Mw8CUtkNCAebzonCQYYxJf5C</span>
+        </div>
+
+        <div class="wallet-grid mt" id="walletGrid">
+          <button type="button" class="wallet-chip" data-wallet="phantom">
+            <strong>Phantom</strong>
+            <span data-wallet-status="phantom">Mendeteksi…</span>
+          </button>
+          <button type="button" class="wallet-chip" data-wallet="backpack">
+            <strong>Backpack</strong>
+            <span data-wallet-status="backpack">Mendeteksi…</span>
+          </button>
+          <button type="button" class="wallet-chip" data-wallet="solflare">
+            <strong>Solflare</strong>
+            <span data-wallet-status="solflare">Mendeteksi…</span>
+          </button>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="connectBtn">Hubungkan Wallet</button>
+
+        <div class="mt status-row">
+          <span class="dot" id="statusDot" aria-hidden="true"></span>
+          <span id="statusText">Belum terhubung.</span>
+        </div>
+
+        <div class="addr-box mt hidden" id="connectedBox">
+          <span class="label">Wallet terhubung</span>
+          <span class="mono" id="connectedAddress">—</span>
+          <div class="small mt" id="connectedWalletName"></div>
+        </div>
+
+        <div class="alert alert-ok" id="alertMatch" role="status">✅ Alamat cocok. Wallet ini memang wallet payout @sage-sparrow-93. Kamu bisa lanjut tanda tangan di langkah 3.</div>
+        <div class="alert alert-err" id="alertMismatch" role="alert">⛔ Alamat tidak cocok. Halaman ini menolak lanjut karena wallet yang terhubung bukan <span class="mono">9fu5GdLCoJPL2SuX8ZY8Mw8CUtkNCAebzonCQYYxJf5C</span>. Putuskan wallet ini, lalu hubungkan wallet yang benar.</div>
+        <div class="alert alert-warn" id="alertNoWallet" role="alert">Wallet Solana belum terdeteksi di browser ini. Pasang ekstensi Phantom, Backpack, atau Solflare dulu, atau buka halaman ini dari browser di dalam aplikasi wallet, lalu muat ulang halaman.</div>
+        <div class="alert alert-err" id="alertConnectError" role="alert"></div>
+        <div class="alert alert-warn" id="alertPending" role="status">⏳ Menunggu persetujuan di Phantom… Kalau popup-nya tidak muncul, klik ikon Phantom di toolbar Chrome (pojok kanan atas) — permintaan koneksi biasanya menunggu di sana. Pastikan juga Phantom sudah terbuka / unlock.</div>
+        <div class="alert alert-warn" id="alertEmbedded" role="alert">Halaman ini sedang terbuka di dalam bingkai (iframe) aplikasi lain. Popup persetujuan Phantom sering tidak muncul dari dalam bingkai seperti ini. Buka halaman ini langsung di tab Chrome biasa — bukan dari dalam aplikasi lain — lalu coba hubungkan lagi.</div>
+
+        <div class="btn-row mt hidden" id="disconnectRow">
+          <button type="button" class="btn btn-secondary" id="disconnectBtn">Putuskan Wallet</button>
+        </div>
+      </section>
+
+      <!-- LANGKAH 2 -->
+      <section class="card" aria-labelledby="h-step2">
+        <div class="step-head">
+          <div class="step-num">2</div>
+          <div>
+            <h2 id="h-step2">Periksa pesannya</h2>
+            <p>Ini pesan persis yang akan ditandatangani — tidak diubah satu karakter pun.</p>
+          </div>
+        </div>
+
+        <div class="message-box mono" id="messageBox">make.fun delegation v1; Domain: make.fun; Payout: 9fu5GdLCoJPL2SuX8ZY8Mw8CUtkNCAebzonCQYYxJf5C; Agent: C5rgfwQXaiotuK4oWcesmnRqaeUAZiNwCZcvt2f4jMhD; Competitions: *; Nonce: 2BiFP3auOatG89GIDNZ1pNaHBlwwQi3f; Issued At: 2026-11-14T09:51:16Z; Expiration Time: 2027-02-12T09:51:16Z</div>
+
+        <dl class="detail-grid">
+          <dt>Domain</dt><dd class="mono">make.fun</dd>
+          <dt>Payout</dt><dd class="mono">9fu5GdLCoJPL2SuX8ZY8Mw8CUtkNCAebzonCQYYxJf5C</dd>
+          <dt>Agent</dt><dd class="mono">C5rgfwQXaiotuK4oWcesmnRqaeUAZiNwCZcvt2f4jMhD</dd>
+          <dt>Kompetisi</dt><dd>Semua (*)</dd>
+          <dt>Nonce</dt><dd class="mono">2BiFP3auOatG89GIDNZ1pNaHBlwwQi3f</dd>
+          <dt>Diterbitkan</dt><dd>14 Nov 2026, 09:51:16 UTC</dd>
+          <dt>Kedaluwarsa</dt><dd>12 Feb 2027, 09:51:16 UTC</dd>
+        </dl>
+      </section>
+
+      <!-- LANGKAH 3 -->
+      <section class="card" aria-labelledby="h-step3">
+        <div class="step-head">
+          <div class="step-num">3</div>
+          <div>
+            <h2 id="h-step3">Tanda tangani pesan</h2>
+            <p>Klik tombol di bawah, lalu setujui permintaan <em>sign message</em> di wallet kamu. Ini tanda tangan off-chain — bukan transaksi dan tanpa fee.</p>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="signBtn" disabled>Tanda Tangani Pesan</button>
+        <p class="small mt" id="signHint">Tombol aktif setelah wallet yang benar terhubung.</p>
+        <div class="alert alert-err" id="alertSignError" role="alert"></div>
+      </section>
+
+      <!-- LANGKAH 4 -->
+      <section class="card" aria-labelledby="h-step4">
+        <div class="step-head">
+          <div class="step-num">4</div>
+          <div>
+            <h2 id="h-step4">Salin signature-nya</h2>
+            <p>Setelah tanda tangan berhasil, signature base58 muncul di sini. Salin dan kirimkan signature itu.</p>
+          </div>
+        </div>
+
+        <div class="sig-box mono" id="sigBox" aria-live="polite"></div>
+        <p class="small hidden" id="sigEmpty">Belum ada signature. Selesaikan langkah 3 dulu.</p>
+
+        <div class="btn-row mt hidden" id="copyRow">
+          <button type="button" class="btn btn-primary" id="copyBtn">Salin Signature</button>
+          <button type="button" class="btn btn-secondary" id="copyAllBtn">Salin Pesan + Signature</button>
+        </div>
+        <div class="alert alert-ok" id="alertCopied" role="status">📋 Tersalin ke clipboard.</div>
+      </section>
+
+      <footer>
+        <strong>Cara kerja halaman ini:</strong>
+        <ul>
+          <li>Semua proses jalan di browser kamu saja. Halaman ini tidak mengirim alamat, pesan, atau signature ke mana pun.</li>
+          <li>Tanda tangan dibuat pakai fungsi <span class="mono">signMessage</span> bawaan wallet — bukan transaksi on-chain, jadi tidak ada fee dan tidak ada yang berpindah.</li>
+          <li>Halaman ini tidak pernah meminta seed phrase atau private key. Jangan pernah memasukkan itu di situs mana pun.</li>
+        </ul>
+      </footer>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var EXPECTED_ADDRESS = "9fu5GdLCoJPL2SuX8ZY8Mw8CUtkNCAebzonCQYYxJf5C";
+        var MESSAGE = "make.fun delegation v1; Domain: make.fun; Payout: 9fu5GdLCoJPL2SuX8ZY8Mw8CUtkNCAebzonCQYYxJf5C; Agent: C5rgfwQXaiotuK4oWcesmnRqaeUAZiNwCZcvt2f4jMhD; Competitions: *; Nonce: 2BiFP3auOatG89GIDNZ1pNaHBlwwQi3f; Issued At: 2026-11-14T09:51:16Z; Expiration Time: 2027-02-12T09:51:16Z";
+
+        // ---------- Base58 encode (untuk signature) ----------
+        var B58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+        function base58Encode(bytes) {
+          if (!bytes || bytes.length === 0) return "";
+          var digits = [0];
+          for (var i = 0; i < bytes.length; i++) {
+            var carry = bytes[i];
+            for (var j = 0; j < digits.length; j++) {
+              carry += digits[j] << 8;
+              digits[j] = carry % 58;
+              carry = (carry / 58) | 0;
+            }
+            while (carry > 0) {
+              digits.push(carry % 58);
+              carry = (carry / 58) | 0;
+            }
+          }
+          var out = "";
+          for (var k = 0; k < bytes.length && bytes[k] === 0; k++) out += "1";
+          for (var q = digits.length - 1; q >= 0; q--) out += B58_ALPHABET[digits[q]];
+          return out;
+        }
+
+        // ---------- Elemen ----------
+        function el(id) { return document.getElementById(id); }
+        var connectBtn = el("connectBtn");
+        var disconnectBtn = el("disconnectBtn");
+        var disconnectRow = el("disconnectRow");
+        var signBtn = el("signBtn");
+        var signHint = el("signHint");
+        var statusDot = el("statusDot");
+        var statusText = el("statusText");
+        var connectedBox = el("connectedBox");
+        var connectedAddress = el("connectedAddress");
+        var connectedWalletName = el("connectedWalletName");
+        var alertMatch = el("alertMatch");
+        var alertMismatch = el("alertMismatch");
+        var alertNoWallet = el("alertNoWallet");
+        var alertConnectError = el("alertConnectError");
+        var alertPending = el("alertPending");
+        var alertEmbedded = el("alertEmbedded");
+        var alertSignError = el("alertSignError");
+        var alertCopied = el("alertCopied");
+        var sigBox = el("sigBox");
+        var sigEmpty = el("sigEmpty");
+        var copyRow = el("copyRow");
+        var copyBtn = el("copyBtn");
+        var copyAllBtn = el("copyAllBtn");
+
+        sigEmpty.classList.remove("hidden");
+
+        // ---------- Deteksi provider ----------
+        function getPhantom() {
+          if (window.phantom && window.phantom.solana && window.phantom.solana.isPhantom) return window.phantom.solana;
+          if (window.solana && window.solana.isPhantom) return window.solana;
+          return null;
+        }
+        function getSolflare() {
+          if (window.solflare && (window.solflare.isSolflare || typeof window.solflare.connect === "function")) return window.solflare;
+          if (window.solana && window.solana.isSolflare) return window.solana;
+          return null;
+        }
+        function getBackpack() {
+          if (window.backpack && typeof window.backpack.connect === "function") return window.backpack;
+          if (window.xnft && window.xnft.solana) return window.xnft.solana;
+          return null;
+        }
+        function providerFor(name) {
+          if (name === "phantom") return getPhantom();
+          if (name === "solflare") return getSolflare();
+          if (name === "backpack") return getBackpack();
+          return null;
+        }
+        function anyProvider() {
+          return getPhantom() || getBackpack() || getSolflare() || window.solana || null;
+        }
+        function nameForProvider(p) {
+          if (!p) return "";
+          if (p === getPhantom()) return "Phantom";
+          if (p === getBackpack()) return "Backpack";
+          if (p === getSolflare()) return "Solflare";
+          return "Wallet Solana";
+        }
+        function pubkeyString(p, provider) {
+          var pk = p || (provider && provider.publicKey);
+          if (!pk) return "";
+          if (typeof pk === "string") return pk;
+          if (typeof pk.toString === "function") {
+            try { return pk.toString(); } catch (e) { /* lanjut */ }
+          }
+          if (typeof pk.toBase58 === "function") return pk.toBase58();
+          return "";
+        }
+
+        var state = {
+          provider: null,
+          providerName: "",
+          address: "",
+          signature: "",
+          connecting: false,
+          connectAttempt: 0,
+          pendingTimer: null,
+          timeoutTimer: null,
+          signTimer: null
+        };
+
+        function refreshWalletChips() {
+          var names = ["phantom", "backpack", "solflare"];
+          var anyFound = false;
+          names.forEach(function (n) {
+            var p = providerFor(n);
+            var chip = document.querySelector('[data-wallet="' + n + '"]');
+            var st = document.querySelector('[data-wallet-status="' + n + '"]');
+            if (!chip || !st) return;
+            if (p) {
+              anyFound = true;
+              chip.classList.add("detected");
+              chip.disabled = false;
+              st.textContent = state.provider === p ? "Terhubung lewat wallet ini" : "Terdeteksi — klik untuk hubungkan";
+              chip.classList.toggle("selected", state.provider === p);
+            } else {
+              chip.classList.remove("detected", "selected");
+              chip.disabled = false;
+              st.textContent = "Tidak terdeteksi di browser ini";
+            }
+          });
+          alertNoWallet.classList.toggle("show", !anyFound && !window.solana);
+          return anyFound;
+        }
+
+        function showAlert(elm, show) { elm.classList.toggle("show", !!show); }
+
+        function updateUI() {
+          var connected = !!state.address;
+          var matches = connected && state.address === EXPECTED_ADDRESS;
+
+          statusDot.className = "dot" + (connected ? (matches ? " on" : " bad") : "");
+          if (!connected) {
+            statusText.textContent = "Belum terhubung.";
+          } else if (matches) {
+            statusText.textContent = "Terhubung dan alamat cocok.";
+          } else {
+            statusText.textContent = "Terhubung, tapi alamat salah — tanda tangan dinonaktifkan.";
+          }
+
+          connectedBox.classList.toggle("hidden", !connected);
+          if (connected) {
+            connectedAddress.textContent = state.address;
+            connectedWalletName.textContent = state.providerName ? ("Lewat " + state.providerName) : "";
+          }
+          disconnectRow.classList.toggle("hidden", !connected);
+          connectBtn.textContent = connected ? "Hubungkan Ulang" : "Hubungkan Wallet";
+
+          showAlert(alertMatch, matches);
+          showAlert(alertMismatch, connected && !matches);
+
+          signBtn.disabled = !matches;
+          signHint.textContent = !connected
+            ? "Tombol aktif setelah wallet yang benar terhubung."
+            : (matches
+                ? "Wallet benar sudah terhubung. Silakan tanda tangan."
+                : "Nonaktif: alamat wallet yang terhubung tidak cocok dengan alamat yang wajib dipakai.");
+
+          refreshWalletChips();
+        }
+
+        function setConnectError(msg) {
+          if (msg) { alertConnectError.textContent = msg; showAlert(alertConnectError, true); }
+          else showAlert(alertConnectError, false);
+        }
+        function setSignError(msg) {
+          if (msg) { alertSignError.textContent = msg; showAlert(alertSignError, true); }
+          else showAlert(alertSignError, false);
+        }
+
+        // ---------- Connect ----------
+        function attachAccountListener(provider) {
+          if (!provider || typeof provider.on !== "function") return;
+          if (provider.__delegationListenerAttached) return;
+          try { provider.__delegationListenerAttached = true; } catch (e) { /* abaikan */ }
+          provider.on("accountChanged", function (pk) {
+            if (state.provider !== provider) return;
+            if (!pk) {
+              state.address = "";
+              state.signature = "";
+              sigBox.classList.remove("show");
+              sigBox.textContent = "";
+              copyRow.classList.add("hidden");
+              sigEmpty.classList.remove("hidden");
+              updateUI();
+              return;
+            }
+            state.address = pubkeyString(pk, provider);
+            updateUI();
+          });
+          provider.on("disconnect", function () {
+            if (state.provider !== provider) return;
+            state.address = "";
+            updateUI();
+          });
+        }
+
+        function clearConnectTimers() {
+          if (state.pendingTimer) { clearTimeout(state.pendingTimer); state.pendingTimer = null; }
+          if (state.timeoutTimer) { clearTimeout(state.timeoutTimer); state.timeoutTimer = null; }
+          showAlert(alertPending, false);
+        }
+
+        function endConnectAttempt() {
+          state.connecting = false;
+          clearConnectTimers();
+          connectBtn.disabled = false;
+        }
+
+        function connectWith(provider, name) {
+          // Cegah permintaan tumpang tindih: klik ganda (chip + tombol) bikin
+          // Phantom menolak dengan "request already pending" (-32002) dan
+          // koneksi yang sebenarnya sedang menunggu ikut gagal.
+          if (state.connecting) return;
+          setConnectError("");
+          if (!provider) {
+            setConnectError("Wallet " + name + " tidak terdeteksi. Pasang ekstensinya dulu atau buka halaman ini dari browser di dalam aplikasi " + name + ", lalu coba lagi.");
+            refreshWalletChips();
+            return;
+          }
+          state.connecting = true;
+          var attempt = ++state.connectAttempt;
+          connectBtn.disabled = true;
+          connectBtn.textContent = "Menghubungkan…";
+          // Popup persetujuan Phantom sering tidak tampil sendiri (halaman di
+          // dalam iframe, atau permintaan menunggu di ikon ekstensi). Tampilkan
+          // petunjuknya kalau persetujuan belum datang juga.
+          state.pendingTimer = setTimeout(function () {
+            if (state.connecting && attempt === state.connectAttempt) showAlert(alertPending, true);
+          }, 1200);
+          state.timeoutTimer = setTimeout(function () {
+            if (!state.connecting || attempt !== state.connectAttempt) return;
+            state.connectAttempt++; // abaikan jawaban yang datang terlambat
+            endConnectAttempt();
+            setConnectError("Phantom tidak menjawab permintaan koneksi. Coba langkah ini: (1) klik ikon Phantom di toolbar Chrome — mungkin ada permintaan yang menunggu di sana; (2) pastikan Phantom sudah unlock; (3) kalau halaman ini terbuka di dalam aplikasi lain, buka langsung di tab Chrome biasa; (4) segarkan halaman ini, lalu klik Hubungkan Wallet sekali saja dan tunggu popup-nya.");
+            updateUI();
+          }, 30000);
+          var promise;
+          try {
+            promise = provider.connect();
+          } catch (e) {
+            endConnectAttempt();
+            setConnectError("Gagal menghubungkan: " + (e && e.message ? e.message : String(e)));
+            updateUI();
+            return;
+          }
+          Promise.resolve(promise).then(function (resp) {
+            if (attempt !== state.connectAttempt) return; // sudah kedaluwarsa
+            endConnectAttempt();
+            state.provider = provider;
+            state.providerName = nameForProvider(provider) || name;
+            var addr = pubkeyString(resp && resp.publicKey, provider);
+            if (!addr) addr = pubkeyString(null, provider);
+            state.address = addr;
+            attachAccountListener(provider);
+            updateUI();
+            if (addr === EXPECTED_ADDRESS) {
+              signBtn.focus();
+            }
+          }).catch(function (e) {
+            if (attempt !== state.connectAttempt) return; // sudah kedaluwarsa
+            endConnectAttempt();
+            var msg = e && e.message ? e.message : String(e);
+            if (e && (e.code === -32002 || /already pending/i.test(msg))) {
+              setConnectError("Sudah ada permintaan koneksi yang menunggu di Phantom. Klik ikon Phantom di toolbar Chrome (pojok kanan atas), setujui permintaan yang menunggu itu, lalu halaman ini lanjut sendiri. Kalau tidak ada yang menunggu, segarkan halaman dan coba sekali lagi.");
+            } else if (e && (e.code === 4001 || /reject/i.test(msg))) {
+              setConnectError("Permintaan koneksi ditolak di wallet. Klik hubungkan lagi dan setujui di jendela wallet.");
+            } else {
+              setConnectError("Gagal menghubungkan wallet: " + msg);
+            }
+            updateUI();
+          });
+        }
+
+        connectBtn.addEventListener("click", function () {
+          var p = state.provider || getPhantom() || getBackpack() || getSolflare() || anyProvider();
+          if (!p) {
+            refreshWalletChips();
+            setConnectError("Tidak ada wallet Solana yang terdeteksi di browser ini.");
+            return;
+          }
+          connectWith(p, nameForProvider(p));
+        });
+
+        document.querySelectorAll("[data-wallet]").forEach(function (chip) {
+          chip.addEventListener("click", function () {
+            var n = chip.getAttribute("data-wallet");
+            var label = n === "phantom" ? "Phantom" : (n === "backpack" ? "Backpack" : "Solflare");
+            connectWith(providerFor(n), label);
+          });
+        });
+
+        disconnectBtn.addEventListener("click", function () {
+          var p = state.provider;
+          state.connectAttempt++;
+          state.connecting = false;
+          clearConnectTimers();
+          connectBtn.disabled = false;
+          state.provider = null;
+          state.providerName = "";
+          state.address = "";
+          state.signature = "";
+          sigBox.classList.remove("show");
+          sigBox.textContent = "";
+          copyRow.classList.add("hidden");
+          sigEmpty.classList.remove("hidden");
+          setSignError("");
+          if (p && typeof p.disconnect === "function") {
+            try { Promise.resolve(p.disconnect()).catch(function () {}); } catch (e) { /* abaikan */ }
+          }
+          updateUI();
+        });
+
+        // ---------- Sign ----------
+        signBtn.addEventListener("click", function () {
+          setSignError("");
+          showAlert(alertCopied, false);
+          if (!state.provider) { setSignError("Wallet belum terhubung."); return; }
+          if (state.address !== EXPECTED_ADDRESS) {
+            setSignError("Alamat wallet tidak cocok, tanda tangan dibatalkan. Hubungkan wallet " + EXPECTED_ADDRESS + ".");
+            return;
+          }
+          if (typeof state.provider.signMessage !== "function") {
+            setSignError("Wallet yang terhubung tidak mendukung signMessage. Coba Phantom, Backpack, atau Solflare versi terbaru.");
+            return;
+          }
+          signBtn.disabled = true;
+          signBtn.textContent = "Menunggu tanda tangan di wallet…";
+          // Sama seperti koneksi: popup tanda tangan bisa menunggu di ikon
+          // ekstensi tanpa tampil sendiri. Beri petunjuk kalau lama.
+          if (state.signTimer) clearTimeout(state.signTimer);
+          state.signTimer = setTimeout(function () {
+            signHint.textContent = "Masih menunggu… Kalau popup Phantom tidak muncul, klik ikon Phantom di toolbar Chrome (pojok kanan atas) — permintaan tanda tangan biasanya menunggu di sana.";
+          }, 5000);
+          var encoded = new TextEncoder().encode(MESSAGE);
+          var result;
+          try {
+            result = state.provider.signMessage(encoded, "utf8");
+          } catch (e) {
+            if (state.signTimer) { clearTimeout(state.signTimer); state.signTimer = null; }
+            signBtn.disabled = false;
+            signBtn.textContent = "Tanda Tangani Pesan";
+            setSignError("Gagal meminta tanda tangan: " + (e && e.message ? e.message : String(e)));
+            return;
+          }
+          Promise.resolve(result).then(function (res) {
+            if (state.signTimer) { clearTimeout(state.signTimer); state.signTimer = null; }
+            var sigBytes = null;
+            if (res) {
+              if (res.signature) sigBytes = res.signature;
+              else if (res instanceof Uint8Array) sigBytes = res;
+              else if (Array.isArray(res)) sigBytes = new Uint8Array(res);
+            }
+            signBtn.disabled = false;
+            signBtn.textContent = "Tanda Tangani Pesan";
+            if (!sigBytes) {
+              setSignError("Wallet tidak mengembalikan signature. Coba lagi, atau pakai wallet lain (Phantom / Backpack / Solflare).");
+              return;
+            }
+            if (!(sigBytes instanceof Uint8Array)) sigBytes = new Uint8Array(sigBytes);
+            state.signature = base58Encode(sigBytes);
+            sigBox.textContent = state.signature;
+            sigBox.classList.add("show");
+            sigEmpty.classList.add("hidden");
+            copyRow.classList.remove("hidden");
+            copyBtn.focus();
+          }).catch(function (e) {
+            if (state.signTimer) { clearTimeout(state.signTimer); state.signTimer = null; }
+            signBtn.disabled = false;
+            signBtn.textContent = "Tanda Tangani Pesan";
+            var msg = e && e.message ? e.message : String(e);
+            if (e && (e.code === 4001 || /reject/i.test(msg))) {
+              setSignError("Tanda tangan dibatalkan di wallet. Klik tombol tanda tangan lagi kalau mau mencoba lagi.");
+            } else {
+              setSignError("Gagal tanda tangan: " + msg);
+            }
+          });
+        });
+
+        // ---------- Copy ----------
+        function copyText(text, done) {
+          function fallback() {
+            var ta = document.createElement("textarea");
+            ta.value = text;
+            ta.setAttribute("readonly", "");
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            ta.setSelectionRange(0, ta.value.length);
+            var ok = false;
+            try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+            document.body.removeChild(ta);
+            done(ok);
+          }
+          if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+            navigator.clipboard.writeText(text).then(function () { done(true); }, fallback);
+          } else {
+            fallback();
+          }
+        }
+        function flashCopied(ok, label) {
+          if (ok) {
+            alertCopied.textContent = "📋 " + label + " tersalin ke clipboard.";
+            showAlert(alertCopied, true);
+            setTimeout(function () { showAlert(alertCopied, false); }, 3500);
+          } else {
+            alertCopied.textContent = "Gagal menyalin otomatis. Tekan dan tahan teksnya, lalu salin manual.";
+            showAlert(alertCopied, true);
+          }
+        }
+        copyBtn.addEventListener("click", function () {
+          if (!state.signature) return;
+          copyText(state.signature, function (ok) { flashCopied(ok, "Signature"); });
+        });
+        copyAllBtn.addEventListener("click", function () {
+          if (!state.signature) return;
+          var all = "Pesan:\n" + MESSAGE + "\n\nSignature (base58):\n" + state.signature + "\n\nWallet:\n" + EXPECTED_ADDRESS;
+          copyText(all, function (ok) { flashCopied(ok, "Pesan + signature"); });
+        });
+
+        // ---------- Init ----------
+        // Di dalam iframe aplikasi lain, popup persetujuan wallet sering
+        // tertelan. Tampilkan peringatan supaya user pindah ke tab Chrome biasa.
+        try {
+          if (window.self !== window.top) showAlert(alertEmbedded, true);
+        } catch (e) {
+          showAlert(alertEmbedded, true);
+        }
+        // Provider kadang disuntikkan agak terlambat; cek ulang beberapa kali.
+        refreshWalletChips();
+        updateUI();
+        var tries = 0;
+        var timer = setInterval(function () {
+          tries++;
+          refreshWalletChips();
+          if (anyProvider() || tries >= 10) clearInterval(timer);
+        }, 300);
+        window.addEventListener("load", refreshWalletChips);
+      })();
+    </script>
+  </body>
+</html>
