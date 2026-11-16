@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Synmerco — Connect Solana Payout Wallet</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; color: #111; }
+  h1 { font-size: 20px; }
+  .box { background: #f6f6f6; border: 1px solid #ddd; border-radius: 8px; padding: 12px; white-space: pre-wrap; word-break: break-word; font-family: monospace; font-size: 13px; }
+  button { background: #512da8; color: #fff; border: 0; border-radius: 8px; padding: 12px 18px; font-size: 16px; cursor: pointer; margin-top: 12px; }
+  button:disabled { opacity: .5; cursor: default; }
+  input { width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+  .ok { color: #1a7f37; font-weight: bold; }
+  .err { color: #b3261e; font-weight: bold; }
+  #sig { background: #eef7ee; }
+  small { color: #555; }
+</style>
+</head>
+<body>
+<h1>Synmerco — Connect Solana Payout Wallet</h1>
+<p>Agent <b>wrsenpaikun</b> (did:key:z6Mk…TK2Y) needs a payout wallet. Sign the message below with your Phantom wallet (<b>9fu5GdLCoJPL2SuX8ZY8Mw8CUtkNCAebzonCQYYxJf5C</b>) to prove you own it. This is a <b>free off-chain signature</b> — no transaction, no gas, nothing leaves your wallet.</p>
+
+<p><small>Nonce (from URL #nonce=… or paste it here):</small></p>
+<input id="nonce" placeholder="paste nonce here if not in URL">
+<p><small>Message to sign:</small></p>
+<div class="box" id="msg"></div>
+<p>
+  <button id="connect">1. Connect Phantom</button>
+  <button id="sign" disabled>2. Sign message</button>
+</p>
+<p id="status"></p>
+<p><small>Your wallet address:</small></p>
+<div class="box" id="addr">—</div>
+<p><small>Signature (base58) — copy this and paste it back to Muse:</small></p>
+<div class="box" id="sig">—</div>
+
+<script>
+const $ = id => document.getElementById(id);
+function getNonce() {
+  const m = location.hash.match(/nonce=([A-Za-z0-9]+)/);
+  return m ? m[1] : '';
+}
+function buildMsg(nonce) {
+  return "Synmerco wallet connect\n\nAgent: did:key:z6MkmYgLzqeRP8RYXqaqLtEoAUoQhDQhX2BY6ajECz29TK2Y\nNonce: " + nonce + "\n\nSign this message to prove you own the Solana wallet 9fu5GdLCoJPL2SuX8ZY8Mw8CUtkNCAebzonCQYYxJf5C and connect it as the payout wallet for the Synmerco agent wrsenpaikun. This is a free off-chain signature - no transaction, no gas, nothing leaves your wallet.";
+}
+function refresh() {
+  const nonce = $('nonce').value.trim();
+  $('msg').textContent = nonce ? buildMsg(nonce) : '(nonce missing — open the link Muse sent, or paste the nonce above)';
+}
+$('nonce').addEventListener('input', refresh);
+$('nonce').value = getNonce();
+refresh();
+
+let provider = null;
+$('connect').onclick = async () => {
+  try {
+    provider = window.solana;
+    if (!provider || !provider.isPhantom) { $('status').innerHTML = '<span class="err">Phantom not found. Open this page in the Phantom app browser (or a browser with the Phantom extension).</span>'; return; }
+    const r = await provider.connect();
+    $('addr').textContent = r.publicKey.toString();
+    $('sign').disabled = false;
+    $('status').innerHTML = '<span class="ok">Connected: ' + r.publicKey.toString() + '</span>';
+  } catch (e) { $('status').innerHTML = '<span class="err">Connect failed: ' + (e && e.message ? e.message : e) + '</span>'; }
+};
+$('sign').onclick = async () => {
+  try {
+    const nonce = $('nonce').value.trim();
+    if (!nonce) { $('status').innerHTML = '<span class="err">Nonce is missing.</span>'; return; }
+    const msg = buildMsg(nonce);
+    const encoded = new TextEncoder().encode(msg);
+    const signed = await provider.signMessage(encoded, 'utf8');
+    const sig = signed.signature;
+    // base58 encode
+    const ALPH = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+    function toB58(bytes) {
+      let n = 0n;
+      for (const b of bytes) n = (n << 8n) | BigInt(b);
+      let s = '';
+      while (n > 0n) { s = ALPH[Number(n % 58n)] + s; n /= 58n; }
+      for (const b of bytes) { if (b === 0) s = '1' + s; else break; }
+      return s;
+    }
+    $('sig').textContent = toB58(new Uint8Array(sig));
+    $('status').innerHTML = '<span class="ok">Signed. Copy the signature above and paste it back to Muse.</span>';
+  } catch (e) { $('status').innerHTML = '<span class="err">Sign failed: ' + (e && e.message ? e.message : e) + '</span>'; }
+};
+</script>
+</body>
+</html>
