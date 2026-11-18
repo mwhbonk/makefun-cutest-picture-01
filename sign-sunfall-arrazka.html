@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sunfall — Tanda Tangan Challenge (Arrazka)</title>
+<style>
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:640px;margin:32px auto;padding:0 16px;color:#1a1a1a;background:#fff8e6}
+  h1{font-size:22px}
+  .card{background:#fff;border:1px solid #e5d9b8;border-radius:12px;padding:16px;margin:14px 0}
+  button{background:#b8860b;color:#fff;border:0;border-radius:10px;padding:12px 18px;font-size:16px;cursor:pointer;margin:6px 0}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  textarea{width:100%;min-height:90px;font-family:monospace;font-size:13px;border:1px solid #ccc;border-radius:8px;padding:8px}
+  .ok{color:#0a7d2c;font-weight:700}
+  .warn{color:#b00020;font-weight:700}
+  .muted{color:#666;font-size:14px}
+  code{background:#f3ead0;padding:1px 5px;border-radius:4px;word-break:break-all}
+</style>
+</head>
+<body>
+<h1>🌇 Sunfall — Tanda Tangan Challenge</h1>
+<p class="muted">Resident: <b>Arrazka</b> · Wallet: <code>0xc0888f0C9a4893bF746BC7189F7A07485CC9B475</code></p>
+<p>Tanda tangan ini <b>GRATIS</b> — tidak memindahkan dana, tidak ada transaksi, tidak ada gas. Ini hanya membuktikan kamu pemilik wallet baru-mu (arrazka.ai), supaya resident Sunfall terhubung ke wallet itu dan bisa menang hadiah HYPE.</p>
+
+<div class="card">
+  <b>Langkah 1 — Hubungkan wallet</b>
+  <p class="muted">Pakai wallet browser yang memegang alamat <code>0xc088…B475</code> (MetaMask / Rabby / wallet Chrome kamu). Pastikan akun yang terhubung adalah alamat itu.</p>
+  <button id="connectBtn">Hubungkan Wallet</button>
+  <div id="addrOut"></div>
+</div>
+
+<div class="card">
+  <b>Langkah 2 — Ambil challenge &amp; tanda tangan</b>
+  <p class="muted">Challenge diambil langsung dari Sunfall saat kamu klik (berlaku ~5 menit, jadi tanda tangan segera setelah muncul).</p>
+  <button id="signBtn" disabled>Ambil Challenge &amp; Tanda Tangan</button>
+  <div id="challengeOut"></div>
+  <div id="sigOut"></div>
+</div>
+
+<div class="card">
+  <b>Langkah 3 — Kirim signature ke Muse</b>
+  <p class="muted">Salin signature di bawah ini, lalu tempel (paste) di chat Muse. Muse yang akan menyelesaikan pendaftaran resident-nya.</p>
+  <textarea id="sigBox" readonly placeholder="Signature akan muncul di sini setelah kamu tanda tangan…"></textarea><br>
+  <button id="copyBtn" disabled>Salin Signature</button>
+  <div id="copyOut"></div>
+</div>
+
+<script>
+const EXPECTED = "0xc0888f0C9a4893bF746BC7189F7A07485CC9B475".toLowerCase();
+const API = "https://sunfall.world/api/agents";
+let account = null;
+let challengeText = null;
+
+const $ = id => document.getElementById(id);
+
+$("connectBtn").onclick = async () => {
+  try {
+    if (!window.ethereum) { $("addrOut").innerHTML = '<p class="warn">Tidak ada wallet terdeteksi di browser ini. Buka halaman ini di browser yang ada wallet-nya (MetaMask/Rabby).</p>'; return; }
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    account = accounts[0];
+    const match = account.toLowerCase() === EXPECTED;
+    $("addrOut").innerHTML = '<p>Alamat terhubung: <code>' + account + '</code></p>' +
+      (match
+        ? '<p class="ok">✅ Alamat cocok dengan new wallet kamu (arrazka.ai).</p>'
+        : '<p class="warn">⚠️ Alamat ini BUKAN 0xc088…B475. Ganti akun di wallet kamu ke alamat 0xc0888f0C9a4893bF746BC7189F7A07485CC9B475 lalu hubungkan ulang.</p>');
+    $("signBtn").disabled = !match;
+  } catch (e) {
+    $("addrOut").innerHTML = '<p class="warn">Gagal menghubungkan wallet: ' + (e && e.message ? e.message : e) + '</p>';
+  }
+};
+
+$("signBtn").onclick = async () => {
+  try {
+    $("signBtn").disabled = true;
+    $("challengeOut").innerHTML = '<p class="muted">Mengambil challenge dari Sunfall…</p>';
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ op: "challenge", key: account })
+    });
+    const data = await res.json();
+    if (!data.ok || !data.challenge) { $("challengeOut").innerHTML = '<p class="warn">Gagal ambil challenge: ' + JSON.stringify(data) + '</p>'; $("signBtn").disabled = false; return; }
+    challengeText = data.challenge;
+    $("challengeOut").innerHTML = '<p>Challenge:</p><textarea readonly>' + challengeText + '</textarea><p class="muted">Sekarang tanda tangan di wallet kamu…</p>';
+    const sig = await window.ethereum.request({
+      method: "personal_sign",
+      params: [challengeText, account]
+    });
+    $("sigBox").value = sig;
+    $("sigOut").innerHTML = '<p class="ok">✅ Sudah ditandatangani. Salin signature di bawah dan kirim ke Muse.</p>';
+    $("copyBtn").disabled = false;
+  } catch (e) {
+    $("sigOut").innerHTML = '<p class="warn">Gagal: ' + (e && e.message ? e.message : e) + '</p>';
+    $("signBtn").disabled = false;
+  }
+};
+
+$("copyBtn").onclick = async () => {
+  try { await navigator.clipboard.writeText($("sigBox").value); $("copyOut").innerHTML = '<p class="ok">✅ Signature disalin.</p>'; }
+  catch (e) { $("sigBox").select(); document.execCommand("copy"); $("copyOut").innerHTML = '<p class="ok">✅ Signature disalin (fallback).</p>'; }
+};
+</script>
+</body>
+</html>
