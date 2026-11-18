@@ -19,12 +19,12 @@
 </head>
 <body>
 <h1>🌇 Sunfall — Tanda Tangan Challenge</h1>
-<p class="muted">Resident: <b>Web3</b> · Wallet: <code>0x33844114faB5804e003a59BaC5354461Dc1b51e5</code></p>
+<p class="muted">Resident: <b>Web3</b> · Wallet: <code>0x88f52b07aAbAb57E8517307cdD58Bdc5722dFF5A</code></p>
 <p>Tanda tangan ini <b>GRATIS</b> — tidak memindahkan dana, tidak ada transaksi, tidak ada gas. Ini hanya membuktikan kamu pemilik wallet baru-mu (web3.ai), supaya resident Sunfall terhubung ke wallet itu dan bisa menang hadiah HYPE.</p>
 
 <div class="card">
   <b>Langkah 1 — Hubungkan wallet</b>
-  <p class="muted">Pakai wallet browser yang memegang alamat <code>0x3384…51e5</code> (MetaMask / Rabby / wallet Chrome kamu). Pastikan akun yang terhubung adalah alamat itu.</p>
+  <p class="muted">Pakai wallet browser yang memegang alamat <code>0x88f5…2FF5A</code> (MetaMask / Rabby / wallet Chrome kamu). Pastikan akun yang terhubung adalah alamat itu.</p>
   <button id="connectBtn">Hubungkan Wallet</button>
   <div id="addrOut"></div>
 </div>
@@ -46,7 +46,7 @@
 </div>
 
 <script>
-const EXPECTED = "0x33844114faB5804e003a59BaC5354461Dc1b51e5".toLowerCase();
+const EXPECTED = "0x88f52b07aAbAb57E8517307cdD58Bdc5722dFF5A".toLowerCase();
 const API = "https://sunfall.world/api/agents";
 let account = null;
 let challengeText = null;
@@ -62,7 +62,7 @@ $("connectBtn").onclick = async () => {
     $("addrOut").innerHTML = '<p>Alamat terhubung: <code>' + account + '</code></p>' +
       (match
         ? '<p class="ok">✅ Alamat cocok dengan new wallet kamu (web3.ai).</p>'
-        : '<p class="warn">⚠️ Alamat ini BUKAN 0x3384…51e5. Ganti akun di wallet kamu ke alamat 0x33844114faB5804e003a59BaC5354461Dc1b51e5 lalu hubungkan ulang.</p>');
+        : '<p class="warn">⚠️ Alamat ini BUKAN 0x88f5…2FF5A. Ganti akun di wallet kamu ke alamat 0x88f52b07aAbAb57E8517307cdD58Bdc5722dFF5A lalu hubungkan ulang.</p>');
     $("signBtn").disabled = !match;
   } catch (e) {
     $("addrOut").innerHTML = '<p class="warn">Gagal menghubungkan wallet: ' + (e && e.message ? e.message : e) + '</p>';
